@@ -1,11 +1,14 @@
-package org.example;
+package org.example.dto;
+
+import lombok.Data;
 
 import java.util.List;
 
-public class Schedule {
+@Data
+public class LessonDto {
     private List<Integer> weekNumber;
-    private List<StudentGroup> studentGroups;
-    private int numSubgroup;
+    private List<SimpleStudentGroupDto> studentGroups;
+    private int numSubgroup; //Если 0 - значит подгруппы у пары нету
     private List<String> auditories;
     private String startLessonTime;
     private String endLessonTime;
@@ -18,5 +21,5 @@ public class Schedule {
     private String endLessonDate;
     private boolean announcement;
     private boolean split;
-    private List<Employee> employees;
+    private List<EmployeeDto> employees;
 }

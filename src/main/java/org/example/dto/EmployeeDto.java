@@ -1,6 +1,9 @@
-package org.example;
+package org.example.dto;
 
-public class Employee {
+import lombok.Data;
+
+@Data
+public class EmployeeDto {
     private String firstName;
     private String lastName;
     private String middleName;
@@ -13,5 +16,4 @@ public class Employee {
     private String urlId;
     private String email;
     private String jobPositions;
-    // геттеры/сеттеры
 }
