@@ -9,7 +9,7 @@ import java.util.Map;
 public class GroupScheduleDto {
     private EmployeeDto employeeDto;
     private StudentGroupDto studentGroupDto;
-    private Map<String, List<LessonDto>> lessons;
+    private Map<String, List<LessonDto>> schedules;
     private List<LessonDto> exams;
     private String startDate;
     private String endDate;
