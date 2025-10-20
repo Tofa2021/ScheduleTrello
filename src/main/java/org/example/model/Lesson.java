@@ -1,9 +1,7 @@
 package org.example.model;
 
 import lombok.Data;
-import org.example.dto.EmployeeDto;
 import org.example.dto.LessonDto;
-import org.example.dto.SimpleStudentGroupDto;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -16,11 +14,11 @@ public class Lesson {
     private int numSubgroup; //Если 0 - значит подгруппы у пары нету
     private String startLessonTime;
     private String endLessonTime;
-    private String subject;
+    private String name;
     private String lessonTypeAbbrev;
     private LocalDate startLessonDate;
     private LocalDate endLessonDate;
-    private List<LocalDate> date;
+    private List<LocalDate> dates;
     private DayOfWeek dayOfWeek;
 
     public Lesson (LessonDto lessonDto) {
@@ -28,7 +26,7 @@ public class Lesson {
         numSubgroup = lessonDto.getNumSubgroup();
         startLessonTime = lessonDto.getStartLessonTime();
         endLessonTime = lessonDto.getEndLessonTime();
-        subject = lessonDto.getSubject();
+        name = lessonDto.getSubject();
         lessonTypeAbbrev = lessonDto.getLessonTypeAbbrev();
         startLessonDate = convertToDate(lessonDto.getStartLessonDate());
         endLessonDate = convertToDate(lessonDto.getEndLessonDate());
@@ -43,8 +41,8 @@ public class Lesson {
     @Override
     public String toString() {
         return "Lesson " +
-                subject + '\'' +
+                name + '\'' +
                 ", lessonTypeAbbrev='" + lessonTypeAbbrev + '\'' +
-                ", date=" + date;
+                ", date=" + dates;
     }
 }

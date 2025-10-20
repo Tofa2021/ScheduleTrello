@@ -59,7 +59,7 @@ public class ScheduleParser {
             for (LessonDto lessonDto : entry.getValue()) {
                 Lesson lesson = new Lesson(lessonDto);
                 lesson.setDayOfWeek(convertToEngDayOfWeek(entry.getKey()));
-                lesson.setDate(calculateDate(lesson, getCurrentWeekNumber()).stream().sorted().toList());
+                lesson.setDates(calculateDate(lesson, getCurrentWeekNumber()).stream().sorted().toList());
                 lessons.add(lesson);
             }
         }
@@ -80,13 +80,15 @@ public class ScheduleParser {
         return dates;
     }
 
-    public static LocalDate findFirstDate(
+    public static LocalDate findFirstDate
+            (
             DayOfWeek currentDayOfWeek,
             DayOfWeek lessonDayOfWeek,
             int currentWeekNumber,
             int lessonWeekNumber,
             LocalDate currentDate
-    ) {
+            )
+    {
         if (currentWeekNumber == lessonWeekNumber) {
             if (currentDayOfWeek == lessonDayOfWeek) {
                 return currentDate;
@@ -123,4 +125,6 @@ public class ScheduleParser {
 
         return DayOfWeek.of(dayOfWeek);
     }
+
+
 }
