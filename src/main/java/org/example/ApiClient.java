@@ -5,43 +5,34 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.example.dto.GroupScheduleDto;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class ApiClient {
     private static final OkHttpClient CLIENT = new OkHttpClient();
     private static final Gson GSON = new Gson();
     private static final String BASE_URL = "https://iis.bsuir.by/api/v1";
 
-    private static String executeRequest(String url) throws IOException {
+    public static  <T> T get(String endpoint, Class<T> responseClass, Map<String, String> params) throws IOException {
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(BASE_URL + endpoint).newBuilder();
+
+        if (params != null){
+            params.forEach(urlBuilder::addQueryParameter);
+        }
+
         Request request = new Request.Builder()
-                .url(url)
+                .url(urlBuilder.build())
                 .addHeader("Accept", "application/json")
                 .build();
 
         try (Response response = CLIENT.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                return response.body().string();
-            } else {
+            if (!response.isSuccessful()) {
                 throw new IOException("Request failed with code: " + response.code());
             }
+
+            String json = response.body().string();
+            return GSON.fromJson(json, responseClass);
         }
-    }
-
-    public static GroupScheduleDto getGroupSchedule(String studentGroupId) throws IOException {
-        HttpUrl url = HttpUrl.parse(BASE_URL + "/schedule")
-                .newBuilder()
-                .addQueryParameter("studentGroup", studentGroupId)
-                .build();
-
-        String json = executeRequest(url.toString());
-        return GSON.fromJson(json, GroupScheduleDto.class);
-    }
-
-    public static int getCurrentWeekNumber() throws IOException {
-        String url = BASE_URL + "/schedule/current-week";
-        String json = executeRequest(url);
-        return GSON.fromJson(json, Integer.class);
     }
 }
