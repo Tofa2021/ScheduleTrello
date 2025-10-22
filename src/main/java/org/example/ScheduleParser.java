@@ -3,9 +3,8 @@ package org.example;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import okhttp3.HttpUrl;
@@ -15,6 +14,7 @@ import okhttp3.Response;
 import org.example.dto.GroupScheduleDto;
 import org.example.dto.LessonDto;
 import org.example.model.Lesson;
+import org.example.model.Subject;
 
 public class ScheduleParser {
     private static final OkHttpClient CLIENT = new OkHttpClient();
@@ -52,26 +52,47 @@ public class ScheduleParser {
         return GSON.fromJson(json, Integer.class);
     }
 
-    public static List<Lesson> getLessons(String studentGroup) throws IOException {
-        List<Lesson> lessons = new ArrayList<>();
-
+    public static List<Subject> getSubjects(String studentGroup) throws IOException {
+        List<Subject> subjects = new ArrayList<>();
         for (Map.Entry<String, List<LessonDto>> entry : getGroupSchedule(studentGroup).getSchedules().entrySet()){
+            outerLoop:
             for (LessonDto lessonDto : entry.getValue()) {
-                Lesson lesson = new Lesson(lessonDto);
-                lesson.setDayOfWeek(convertToEngDayOfWeek(entry.getKey()));
-                lesson.setDates(calculateDate(lesson, getCurrentWeekNumber()).stream().sorted().toList());
-                lessons.add(lesson);
+                String name = lessonDto.getSubject();
+                LocalDate startLessonDate = DateConverter.convertToDate(lessonDto.getStartLessonDate());
+                LocalDate endLessonDate = DateConverter.convertToDate(lessonDto.getEndLessonDate());
+                List<Lesson> lessons = convertLessonDtoToLessons(lessonDto, convertToEngDayOfWeek(entry.getKey()))
+                        .stream()
+                        .distinct()
+                        .collect(Collectors.toList());
+                for (Subject subject : subjects) {
+                    if (Objects.equals(subject.getName(), name)) {
+                        subject.addLessons(lessons, startLessonDate, endLessonDate);
+                        continue outerLoop;
+                    }
+                }
+                subjects.add(new Subject(name, startLessonDate, endLessonDate, lessons));
             }
+        }
+
+        return subjects;
+    }
+
+    public static List<Lesson> convertLessonDtoToLessons(LessonDto lessonDto, DayOfWeek lessonDayOfWeek) throws IOException {
+        List<Lesson> lessons = new ArrayList<>();
+        for (LocalDate date : calculateDate(lessonDto, lessonDayOfWeek, getCurrentWeekNumber())) {
+            Lesson lesson = new Lesson(lessonDto.getNumSubgroup(), LessonType.convertToLessonType(lessonDto.getLessonTypeAbbrev()), date);
+            lessons.add(lesson);
         }
 
         return lessons;
     }
 
-    public static List<LocalDate> calculateDate(Lesson lesson, int currentWeekNumber) {
+    public static List<LocalDate> calculateDate(LessonDto lessonDto, DayOfWeek lessonDtoDayOfWeek, int currentWeekNumber) {
+        LocalDate endLessonDate = DateConverter.convertToDate(lessonDto.getEndLessonDate());
         List<LocalDate> dates = new ArrayList<>();
-        for (int weekNumber : lesson.getWeekNumber()) {
-            LocalDate date = findFirstDate(LocalDate.now().getDayOfWeek(), lesson.getDayOfWeek(), currentWeekNumber, weekNumber, LocalDate.now());
-            while (date.isBefore(lesson.getEndLessonDate())) {
+        for (int weekNumber : lessonDto.getWeekNumber()) {
+            LocalDate date = findFirstDate(LocalDate.now().getDayOfWeek(), lessonDtoDayOfWeek, currentWeekNumber, weekNumber, LocalDate.now());
+            while (date.isBefore(endLessonDate) || date.isEqual(endLessonDate)) { // maybe ran out of bounds
                 dates.add(date);
                 date = date.plusWeeks(4);
             }
@@ -82,11 +103,11 @@ public class ScheduleParser {
 
     public static LocalDate findFirstDate
             (
-            DayOfWeek currentDayOfWeek,
-            DayOfWeek lessonDayOfWeek,
-            int currentWeekNumber,
-            int lessonWeekNumber,
-            LocalDate currentDate
+                DayOfWeek currentDayOfWeek,
+                DayOfWeek lessonDayOfWeek,
+                int currentWeekNumber,
+                int lessonWeekNumber,
+                LocalDate currentDate
             )
     {
         if (currentWeekNumber == lessonWeekNumber) {
@@ -125,6 +146,4 @@ public class ScheduleParser {
 
         return DayOfWeek.of(dayOfWeek);
     }
-
-
 }

@@ -3,23 +3,33 @@ package org.example.model;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class Subject {
     private String name;
     private LocalDate startLessonDate;
     private LocalDate endLessonDate;
-    private List<LocalDate> dates;
+    private List<Lesson> lessons;
 
-    public Subject(List<Lesson> lessons) {
-        Lesson firstLesson = lessons.getFirst();
-        name = firstLesson.getName();
-        startLessonDate = firstLesson.getStartLessonDate();
-        endLessonDate = firstLesson.getEndLessonDate();
-        dates = lessons.stream()
-                .flatMap(lesson -> lesson.getDates().stream())
-                .distinct()
-                .toList();
+    public Subject(String name, LocalDate startLessonDate, LocalDate endLessonDate, List<Lesson> lessons) {
+        this.name = name;
+        this.startLessonDate = startLessonDate;
+        this.endLessonDate = endLessonDate;
+        this.lessons = new ArrayList<>(lessons);
+    }
+
+    public void addLessons(List<Lesson> lessons, LocalDate newLessonsStartDate,LocalDate newLessonsEndDate) {
+        if (endLessonDate.isBefore(newLessonsEndDate)){
+            endLessonDate = newLessonsEndDate;
+        }
+        if (startLessonDate.isAfter(newLessonsStartDate)) {
+            startLessonDate = newLessonsStartDate;
+        }
+        this.lessons.addAll(lessons);
+        this.lessons = this.lessons.stream().sorted(Comparator.comparing(Lesson::getDate)).collect(Collectors.toList());
     }
 }
