@@ -1,2 +1,2 @@
-trello.api.key=YOUR_API_KEY
-trello.token=YOUR_TOKEN
+trelloKey=YOUR_API_KEY
+trelloToken=YOUR_TOKEN

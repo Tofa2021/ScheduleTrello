@@ -1,21 +1,16 @@
-package org.example;
+    package org.example;
 
-import org.example.model.Subject;
+    import org.example.model.Lesson;
 
-import java.io.IOException;
+    import java.io.IOException;
+    import java.time.LocalDate;
 
-public class Main {
-    public static void main(String[] args) throws IOException {
-        String studentGroup = "414302";
+    public class Main {
+        public static void main(String[] args) throws IOException {
+//            Board board = trelloApi.getBoard("68e6984ec50df586088d6dff");
+//            TList inboxList = trelloApi.getList("680ba9eeea5071c6bd6503b6");
 
-        Subject OOPiP = ScheduleParser.getSubjects(studentGroup)
-                .stream()
-                .filter(subject -> subject.getName().equals("БАУИ"))
-                .findFirst()
-                .orElse(null);
-        OOPiP.getLessons()
-                .stream()
-                .filter(lesson -> lesson.getNumSubgroup() != 2 && lesson.getLessonType() == LessonType.LABORATORY)
-                .forEach(System.out::println);
+            TrelloService trelloService = new TrelloService();
+            trelloService.createLabCard(new Lesson(1, LessonType.LABORATORY, LocalDate.now()), "FFF", 3, "680ba9eeea5071c6bd6503b6");
+        }
     }
-}
