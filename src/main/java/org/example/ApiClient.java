@@ -1,20 +1,26 @@
 package org.example;
 
 import com.google.gson.Gson;
+import com.julienvey.trello.domain.Badges;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 public class ApiClient {
     private static final OkHttpClient CLIENT = new OkHttpClient();
     private static final Gson GSON = new Gson();
-    private static final String BASE_URL = "https://iis.bsuir.by/api/v1";
+    private final String BASE_URL;
 
-    public static  <T> T get(String endpoint, Class<T> responseClass, Map<String, String> params) throws IOException {
+    public ApiClient(String baseUrl) {
+        BASE_URL = baseUrl;
+    }
+
+    public <T> T get(String endpoint, Type responseType, Map<String, String> params) throws IOException {
         HttpUrl.Builder urlBuilder = HttpUrl.parse(BASE_URL + endpoint).newBuilder();
 
         if (params != null){
@@ -32,7 +38,7 @@ public class ApiClient {
             }
 
             String json = response.body().string();
-            return GSON.fromJson(json, responseClass);
+            return GSON.fromJson(json, responseType);
         }
     }
 }
