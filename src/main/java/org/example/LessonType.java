@@ -1,10 +1,18 @@
 package org.example;
 
-public enum LessonType {
-    LECTURE,
-    PRACTICAL,
-    LABORATORY,
+import javax.naming.Name;
+
+public enum LessonType implements Nameable {
+    LECTURE("ЛК"),
+    PRACTICAL("ПЗ"),
+    LABORATORY("ЛР"),
     ;
+
+    private final String name;
+
+    LessonType(String name) {
+        this.name = name;
+    }
 
     public static LessonType convertToLessonType(String stringLessonType) {
         return switch (stringLessonType) {
@@ -13,5 +21,10 @@ public enum LessonType {
             case "ЛК" -> LECTURE;
             default -> throw new IllegalStateException("Unexpected value: " + stringLessonType);
         };
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }
