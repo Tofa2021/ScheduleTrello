@@ -1,6 +1,4 @@
-package org.example;
-
-import javax.naming.Name;
+package org.example.model;
 
 public enum LessonType implements Nameable {
     LECTURE("ЛК"),

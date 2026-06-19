@@ -1,10 +1,14 @@
 package org.example.dto;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
 public class LessonDto {
     private List<Integer> weekNumber;
     private List<SimpleStudentGroupDto> studentGroups;

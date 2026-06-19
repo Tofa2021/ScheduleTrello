@@ -1,4 +1,6 @@
-package org.example;
+package org.example.util;
+
+import org.example.model.Nameable;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -17,8 +19,7 @@ public class Utils {
     }
 
     public static DayOfWeek convertToEngDayOfWeek(String rusDayOfWeek) {
-        int dayOfWeek = 0;
-        dayOfWeek = switch (rusDayOfWeek) {
+        int dayOfWeek = switch (rusDayOfWeek) {
             case "Понедельник" -> 1;
             case "Вторник" -> 2;
             case "Среда" -> 3;
@@ -60,12 +61,36 @@ public class Utils {
     }
 
     public static <T extends Nameable> T select(T[] values) {
+        printStringList(Arrays.stream(values)
+                .map(T::getName)
+                .toArray(String[]::new));
+
+        int chosenIndex = scanBorderInt(1, values.length) - 1;
+        return values[chosenIndex];
+    }
+
+    public static <T extends Nameable> T select(List<T> values) {
+        printStringList(values.stream().map(T::getName).toList());
+
+        int chosenIndex = scanBorderInt(1, values.size()) - 1;
+        return values.get(chosenIndex);
+    }
+
+    public static String select(String[] values) {
+        printStringList(values);
+        int chosenIndex = scanBorderInt(1, values.length) - 1;
+        return values[chosenIndex];
+    }
+
+    public static void printStringList(List<String> values) {
+        printStringList(values.toArray(String[]::new));
+    }
+
+    public static void printStringList(String[] values) {
         for (int i = 0; i < values.length; i++) {
             System.out.print(i + 1);
             System.out.print(") ");
-            System.out.println(values[i].getName());
+            System.out.println(values[i]);
         }
-        int chosenIndex = scanBorderInt(1, values.length) - 1;
-        return values[chosenIndex];
     }
 }

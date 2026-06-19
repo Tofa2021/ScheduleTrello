@@ -1,45 +1,22 @@
-    package org.example;
+package org.example;
 
-    import com.google.gson.internal.bind.util.ISO8601Utils;
-    import com.julienvey.trello.domain.Board;
-    import com.julienvey.trello.domain.TList;
-    import org.example.model.Lesson;
-    import org.example.model.Subject;
+import org.example.presentation.view.Interface;
 
-    import java.util.ArrayList;
-    import java.util.List;
-    import java.util.Map;
-    import java.util.Scanner;
+/*
+String studentGroup = "414302";
+int subgroupNumber = 1;
+String boardId = "68146b5cbb7f1c40fe48f3c4";
+String listId = "68146b8a44c2d2ecd675194f";
+List<Subject> subjects = ScheduleParser.getSubjects(studentGroup);
+*/
 
-    public class Main {
-        public static void main(String[] args) throws Exception {
-            String studentGroup = "414302";
-            int subgroupNumber = 1;
-            String boardId = "68e6984ec50df586088d6dff";
-            String listId = "680ba9eeea5071c6bd6503b6";
-            List<Subject> subjects = ScheduleParser.getSubjects(studentGroup);
+public class Main {
+    public static void main(String[] args) throws Exception {
+        final String groupId = "414302";
 
-            cycle:
-            while(true) {
-                System.out.println("Выберите действие:");
-                System.out.println("1) Создать карточки по расписанию");
-                System.out.println("2) Просмотр пар по предмету");
-                System.out.println("0) Выход");
-                switch (Utils.scanInt()) {
-                    case 1:
-                        TrelloService trelloService = new TrelloService();
-                        trelloService.createLabCards(subjects, subgroupNumber, boardId, listId);
-                        break;
-                    case 2:
-                        Subject subject = Utils.select(subjects.toArray(new Subject[0]));
-                        LessonType lessonType = Utils.select(LessonType.values());
-                        subject.getLessonsByType(lessonType).stream().filter(lesson -> lesson.getNumSubgroup() != 2).forEach(System.out::println);
-                        break;
-                    case 0:
-                        break cycle;
-                        default:
-                        System.out.println("Нет такого пункта");
-                }
-            }
-        }
+        DependencyInjection dependencyInjection = new DependencyInjection();
+        Interface userInterface = dependencyInjection.inject(groupId);
+
+        userInterface.open();
     }
+}

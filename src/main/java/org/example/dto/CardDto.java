@@ -51,7 +51,7 @@ public class CardDto {
         card.setIdShort(idShort);
         card.setIdAttachmentCover(idAttachmentCover);
         card.setManualCoverAttachment(manualCoverAttachment);
-        card.setPos(0); //
+        card.setPos(0);
         card.setShortLink(shortLink);
         card.setShortUrl(shortUrl);
         card.setSubscribed(subscribed);
