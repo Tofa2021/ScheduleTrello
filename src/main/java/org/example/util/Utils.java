@@ -1,17 +1,11 @@
 package org.example.util;
 
-import org.example.model.Nameable;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Scanner;
 
 public class Utils {
-    public static Scanner scanner = new Scanner(System.in);
-
     public static LocalDate convertToDate(String stringDate) {
         String[] parts = stringDate.split("\\.");
         List<Integer> dateParts = Arrays.stream(parts).map(Integer::parseInt).toList();
@@ -31,66 +25,5 @@ public class Utils {
         };
 
         return DayOfWeek.of(dayOfWeek);
-    }
-
-    public static int scanBorderInt(int lowerBorder, int upperBorder) {
-        while (true) {
-            try {
-                int input = scanner.nextInt();
-                if (input >= lowerBorder && input <= upperBorder) {
-                    return input;
-                } else {
-                    System.out.println("Вводимое число должно быть между " + lowerBorder + " и " + upperBorder);
-                }
-            } catch (InputMismatchException exception) {
-                System.out.println("Ввод должны быть числом");
-                scanner.next();
-            }
-        }
-    }
-
-    public static int scanInt() {
-        while (true) {
-            try {
-                return scanner.nextInt();
-            } catch (InputMismatchException exception) {
-                System.out.println("Ввод должны быть числом");
-                scanner.next();
-            }
-        }
-    }
-
-    public static <T extends Nameable> T select(T[] values) {
-        printStringList(Arrays.stream(values)
-                .map(T::getName)
-                .toArray(String[]::new));
-
-        int chosenIndex = scanBorderInt(1, values.length) - 1;
-        return values[chosenIndex];
-    }
-
-    public static <T extends Nameable> T select(List<T> values) {
-        printStringList(values.stream().map(T::getName).toList());
-
-        int chosenIndex = scanBorderInt(1, values.size()) - 1;
-        return values.get(chosenIndex);
-    }
-
-    public static String select(String[] values) {
-        printStringList(values);
-        int chosenIndex = scanBorderInt(1, values.length) - 1;
-        return values[chosenIndex];
-    }
-
-    public static void printStringList(List<String> values) {
-        printStringList(values.toArray(String[]::new));
-    }
-
-    public static void printStringList(String[] values) {
-        for (int i = 0; i < values.length; i++) {
-            System.out.print(i + 1);
-            System.out.print(") ");
-            System.out.println(values[i]);
-        }
     }
 }

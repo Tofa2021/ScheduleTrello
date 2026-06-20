@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.example.model.Subject;
 import org.example.service.ScheduleService;
 import org.example.service.TaskManagerService;
-import org.example.util.Utils;
+import org.example.util.scanner.ScannerManager;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 public class CommandLineInterface implements Interface {
+    private final ScannerManager scannerManager;
     private final TaskManagerService taskManagerService;
     private final ScheduleService scheduleService;
     private final String groupId;
@@ -24,7 +25,7 @@ public class CommandLineInterface implements Interface {
     private void show() {
         while (!isStopped) {
             showMenuAction();
-            switch (Utils.scanInt()) {
+            switch (scannerManager.scanInt()) {
                 case 1 -> showSubjectLessonsAction();
                 case 2 -> createScheduleCardsAction();
                 case 3 -> createSubjectCardsAction();
@@ -55,7 +56,7 @@ public class CommandLineInterface implements Interface {
 
     private void createSubjectTasks(Subject subject) {
         System.out.println("Сколько работ по предмету " + subject.getName());
-        int labCount = Utils.scanBorderInt(0, 20);
+        int labCount = scannerManager.scanBorderInt(0, 20);
 
         taskManagerService.createSubjectTasks(subject, labCount, listId);
     }
@@ -63,12 +64,12 @@ public class CommandLineInterface implements Interface {
     private void showSubjectLessonsAction() {
         Subject subject = selectSubject();
 
-        Utils.printStringList(subject.getLessons().stream().map(Object::toString).toList());
+        scannerManager.printStringList(subject.getLessons().stream().map(Object::toString).toList());
     }
 
     private Subject selectSubject() {
         List<String> subjectNames = scheduleService.getSubjectNames(groupId);
-        String selectedSubjectName = Utils.select(subjectNames.toArray(String[]::new));
+        String selectedSubjectName = scannerManager.select(subjectNames.toArray(String[]::new));
 
         return scheduleService.getSubject(selectedSubjectName, groupId);
     }
