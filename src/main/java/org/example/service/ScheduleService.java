@@ -7,5 +7,7 @@ import java.util.List;
 public interface ScheduleService {
     Subject getSubject(String name, String groupId);
 
+    List<Subject> getSubjects(String groupId);
+
     List<String> getSubjectNames(String groupId);
 }

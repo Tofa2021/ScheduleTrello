@@ -1,2 +1,5 @@
 trelloKey=YOUR_API_KEY
 trelloToken=YOUR_TOKEN
+trelloListId=YOUR_LIST_ID
+trelloBoardId=YOUR_BOARD_ID
+groupId=YOUR_GROUP_ID

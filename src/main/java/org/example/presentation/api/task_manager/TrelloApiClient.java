@@ -8,17 +8,13 @@ import com.julienvey.trello.domain.CheckList;
 import com.julienvey.trello.domain.TList;
 import com.julienvey.trello.impl.TrelloImpl;
 import com.julienvey.trello.impl.http.ApacheHttpClient;
-import org.example.Main;
 import org.example.dto.CardDto;
 import org.example.dto.CheckListDto;
 import org.example.presentation.api.HttpClient;
+import org.example.util.PropertiesUtil;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 public class TrelloApiClient implements TaskManagerApiClient {
     private final Trello TRELLO;
@@ -28,18 +24,8 @@ public class TrelloApiClient implements TaskManagerApiClient {
     private final HttpClient httpClient;
 
     public TrelloApiClient(HttpClient httpClient) {
-        Properties properties = new Properties();
-        try (InputStream input = Main.class.getClassLoader().getResourceAsStream("application.properties")) {
-            if (input == null) {
-                throw new FileNotFoundException("application.properties not found in classpath");
-            }
-            properties.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        TRELLO_KEY = properties.getProperty("trelloKey");
-        TRELLO_TOKEN = properties.getProperty("trelloToken");
+        TRELLO_KEY = PropertiesUtil.getProperty("trelloKey");
+        TRELLO_TOKEN = PropertiesUtil.getProperty("trelloToken");
         TRELLO = new TrelloImpl(TRELLO_KEY, TRELLO_TOKEN, new ApacheHttpClient());
         this.httpClient = httpClient;
     }

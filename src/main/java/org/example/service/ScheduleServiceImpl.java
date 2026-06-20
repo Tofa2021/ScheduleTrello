@@ -27,6 +27,15 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    public List<Subject> getSubjects(String groupId) {
+        if (!Objects.equals(this.groupId, groupId)) {
+            refreshSubjects(groupId);
+        }
+
+        return subjects;
+    }
+
+    @Override
     public List<String> getSubjectNames(String groupId) {
         if (!Objects.equals(this.groupId, groupId)) {
             refreshSubjects(groupId);
