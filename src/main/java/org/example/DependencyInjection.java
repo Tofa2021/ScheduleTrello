@@ -37,7 +37,7 @@ public class DependencyInjection {
         ScheduleService scheduleService = new ScheduleServiceImpl(scheduleApiClient, subjectConverter);
         TaskManagerService taskManagerService = new TaskManagerServiceImpl(taskManagerApiClient);
 
-        CommandLineInterface commandLineInterface = new CommandLineInterface(scannerManager, taskManagerService, scheduleService, groupId, listId);
+        CommandLineInterface commandLineInterface = new CommandLineInterface(scannerManager, taskManagerService, scheduleService, groupId, listId, 1);
         return commandLineInterface;
     }
 }

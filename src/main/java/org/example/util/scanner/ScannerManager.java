@@ -53,8 +53,8 @@ public interface ScannerManager {
         return values[chosenIndex];
     }
 
-    default void printStringList(List<String> values) {
-        printStringList(values.toArray(String[]::new));
+    default <T> void printStringList(List<T> values) {
+        printStringList(values.stream().map(Object::toString).toArray(String[]::new));
     }
 
     default void printStringList(String[] values) {

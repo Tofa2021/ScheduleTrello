@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -73,14 +74,57 @@ public class Subject implements Nameable {
     }
 
     public List<Lesson> getLessonsByType(LessonType lessonType) {
-        return lessons.stream()
-                .filter(lesson -> lesson.getLessonType() == lessonType)
-                .toList();
+        return getFilteredLessons(null, null, null, null, Set.of(lessonType));
     }
 
     public List<Lesson> getLessonsByTypes(Set<LessonType> types) {
-        return lessons.stream()
-                .filter(lesson -> types.contains(lesson.getLessonType()))
-                .toList();
+        return getFilteredLessons(null, null, null, null, types);
+    }
+
+    public List<Lesson> getRemainingLessons(LocalDate dateFrom) {
+        return getFilteredLessons(dateFrom, null, null, null, null);
+    }
+
+    public List<Lesson> getNotOnlySubgroupLessons(int subgroupNumber) {
+        return getFilteredLessons(null, null, subgroupNumber, false, null);
+    }
+
+    private List<Lesson> getFilteredLessons(
+            LocalDate dateFrom,
+            LocalDate dateTo,
+            Integer subgroupNumber,
+            Boolean isSubgroupOnly,
+            Set<LessonType> lessonTypes
+    ) {
+        Stream<Lesson> stream = lessons.stream();
+
+        if (dateFrom != null) {
+            stream = stream.filter(lesson -> lesson.getDate().isAfter(dateFrom));
+        }
+
+        if (dateTo != null) {
+            stream = stream.filter(lesson -> lesson.getDate().isBefore(dateTo));
+        }
+
+        if (subgroupNumber != null) {
+            if (isSubgroupOnly == null) {
+                throw new RuntimeException("ТЫ дурачок");
+            }
+            if (isSubgroupOnly) {
+                stream = stream.filter(lesson -> lesson.getNumSubgroup() == subgroupNumber);
+            } else {
+                stream = stream.filter(lesson -> lesson.getNumSubgroup() == subgroupNumber || lesson.getNumSubgroup() == 0);
+            }
+        }
+
+        if (lessonTypes != null) {
+            stream = stream.filter(lesson -> lessonTypes.contains(lesson.getLessonType()));
+        }
+
+        return stream.toList();
+    }
+
+    public List<Lesson> getRemainingNotOnlySubgroupLessons(int subgroupNumber, LocalDate dateFrom) {
+        return getFilteredLessons(dateFrom, null, subgroupNumber, false, null);
     }
 }
