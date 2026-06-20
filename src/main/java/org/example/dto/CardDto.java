@@ -26,7 +26,7 @@ public class CardDto {
     private String idShort;
     private String idAttachmentCover;
     private boolean manualCoverAttachment;
-    private double pos;
+    private int pos;
     private String shortLink;
     private String shortUrl;
     private boolean subscribed;
