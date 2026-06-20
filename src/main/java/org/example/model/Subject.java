@@ -25,7 +25,7 @@ public class Subject implements Nameable {
 
     private Pair<LocalDate, LocalDate> findEarliestAndLatestDate(List<Lesson> lessons) {
         if (lessons.isEmpty()) {
-            throw new RuntimeException("Lessons is empty");
+            return new Pair<>(null, null);
         }
         LocalDate earliestDate = lessons.stream().map(Lesson::getDate).min(Comparator.naturalOrder()).get();
         LocalDate latestDate = lessons.stream().map(Lesson::getDate).max(Comparator.naturalOrder()).get();
@@ -36,6 +36,14 @@ public class Subject implements Nameable {
         Pair<LocalDate, LocalDate> dates = findEarliestAndLatestDate(lessons);
         LocalDate newLessonsStartDate = dates.first();
         LocalDate newLessonsEndDate = dates.second();
+
+        if (newLessonsStartDate == null) {
+            newLessonsStartDate = LocalDate.of(2026, 3, 20);
+        }
+
+        if (newLessonsEndDate == null) {
+            newLessonsEndDate = LocalDate.of(2026, 3, 20);
+        }
 
         if (endLessonDate == null) {
             endLessonDate = newLessonsEndDate;
