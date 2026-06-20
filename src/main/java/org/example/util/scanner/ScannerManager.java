@@ -13,7 +13,7 @@ public interface ScannerManager {
         while (true) {
             try {
                 return Integer.parseInt(scanString());
-            } catch (InputMismatchException exception) {
+            } catch (InputMismatchException | NumberFormatException exception) {
                 System.out.println("Ввод должны быть числом");
             }
         }
@@ -62,6 +62,19 @@ public interface ScannerManager {
             System.out.print(i + 1);
             System.out.print(") ");
             System.out.println(values[i]);
+        }
+    }
+
+    default boolean scanBoolean() {
+        while (true) {
+            String input = scanString();
+            if (InputPatterns.FALSE_BOOLEAN.match(input)) {
+                return false;
+            }
+            if (InputPatterns.TRUE_BOOLEAN.match(input)) {
+                return true;
+            }
+            System.out.println("Не удалось понять согласие или отрицание");
         }
     }
 }

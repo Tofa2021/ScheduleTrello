@@ -46,7 +46,10 @@ public class CommandLineInterface implements Interface {
     private void createScheduleCardsAction() {
         List<Subject> subjects = scheduleService.getSubjects(groupId);
         for (Subject subject : subjects) {
-            createSubjectTasks(subject);
+            System.out.println("Нужно ли добавлять таски по предмету " + subject.getName());
+            if (scannerManager.scanBoolean()) {
+                createSubjectTasks(subject);
+            }
         }
     }
 
