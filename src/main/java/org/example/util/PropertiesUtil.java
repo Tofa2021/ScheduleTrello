@@ -24,4 +24,8 @@ public class PropertiesUtil {
     public static String getProperty(String key) {
         return properties.getProperty(key);
     }
+
+    public static int getIntProperty(String key) {
+        return Integer.parseInt(getProperty(key));
+    }
 }

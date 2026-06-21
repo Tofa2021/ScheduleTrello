@@ -7,6 +7,6 @@ public class SystemInScannerManager implements ScannerManager {
 
     @Override
     public String scanString() {
-        return scanner.next();
+        return scanner.nextLine();
     }
 }
