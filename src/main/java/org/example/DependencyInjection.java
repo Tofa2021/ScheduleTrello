@@ -17,8 +17,11 @@ import org.example.util.scanner.SystemInScannerManager;
 
 public class DependencyInjection {
     public Interface inject() {
+        final String labCountListId = PropertiesUtil.getProperty("trelloLabCountListId");
+        final String listToCreateId = PropertiesUtil.getProperty("trelloListToCreateId");
+        final String boardId = PropertiesUtil.getProperty("trelloBoardId");
         final String groupId = PropertiesUtil.getProperty("groupId");
-        final String listId = PropertiesUtil.getProperty("trelloListId");
+        final int subgroupNumber = PropertiesUtil.getIntProperty("subgroupNumber");
 
         ScannerManager scannerManager = new SystemInScannerManager();
 
@@ -37,7 +40,14 @@ public class DependencyInjection {
         ScheduleService scheduleService = new ScheduleServiceImpl(scheduleApiClient, subjectConverter);
         TaskManagerService taskManagerService = new TaskManagerServiceImpl(taskManagerApiClient);
 
-        CommandLineInterface commandLineInterface = new CommandLineInterface(scannerManager, taskManagerService, scheduleService, groupId, listId, 1);
+        CommandLineInterface commandLineInterface = new CommandLineInterface(
+                scannerManager,
+                taskManagerService,
+                scheduleService,
+                groupId,
+                listToCreateId,
+                subgroupNumber
+        );
         return commandLineInterface;
     }
 }

@@ -1,5 +1,7 @@
 trelloKey=YOUR_API_KEY
 trelloToken=YOUR_TOKEN
-trelloListId=YOUR_LIST_ID
+trelloListToCreateId=YOUR_LIST_WHERE_CREATE_TASKS_ID
+trelloLabCountListId=YOUR_LIST_WHERE_TASK_CHECKLISTS_ID
 trelloBoardId=YOUR_BOARD_ID
 groupId=YOUR_GROUP_ID
+subgroupNumber=YOUR_SUBGROUP_NUMBER
