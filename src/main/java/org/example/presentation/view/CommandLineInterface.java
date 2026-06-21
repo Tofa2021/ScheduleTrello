@@ -2,13 +2,16 @@ package org.example.presentation.view;
 
 import lombok.RequiredArgsConstructor;
 import org.example.model.Lesson;
+import org.example.model.LessonType;
 import org.example.model.Subject;
 import org.example.service.ScheduleService;
 import org.example.service.TaskManagerService;
 import org.example.util.scanner.ScannerManager;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class CommandLineInterface implements Interface {
@@ -16,7 +19,7 @@ public class CommandLineInterface implements Interface {
     private final TaskManagerService taskManagerService;
     private final ScheduleService scheduleService;
     private final String groupId;
-    private final String listId;
+    private final String listToCreateId;
     private final int subgroupNumber;
     private boolean isStopped = false;
 
@@ -70,27 +73,6 @@ public class CommandLineInterface implements Interface {
         System.out.println("0) Выход");
     }
 
-    private void createScheduleCardsAction() {
-        List<Subject> subjects = scheduleService.getSubjects(groupId);
-        for (Subject subject : subjects) {
-            System.out.println("Нужно ли добавлять таски по предмету " + subject.getName());
-            if (scannerManager.scanBoolean()) {
-                createSubjectTasks(subject);
-            }
-        }
-    }
-
-    private void createSubjectCardsAction() {
-        createSubjectTasks(selectSubject());
-    }
-
-    private void createSubjectTasks(Subject subject) {
-        System.out.println("Сколько работ по предмету " + subject.getName());
-        int labCount = scannerManager.scanBorderInt(0, 20);
-
-        taskManagerService.createSubjectTasks(subject, labCount, listId);
-    }
-
     private Subject selectSubject() {
         List<String> subjectNames = scheduleService.getSubjectNames(groupId);
         String selectedSubjectName = scannerManager.select(subjectNames.toArray(String[]::new));
@@ -101,7 +83,7 @@ public class CommandLineInterface implements Interface {
     private void showSubjectAllLessonsAction() {
         Subject subject = selectSubject();
 
-        scannerManager.printStringList(subject.getLessons().stream().map(Object::toString).toList());
+        scannerManager.printStringList(subject.getLessonsByTypes(selectLessonTypes()).stream().map(Object::toString).toList());
     }
 
     private void showSubjectRemainingLessonsAction() {
@@ -144,19 +126,48 @@ public class CommandLineInterface implements Interface {
     }
 
     private void createSubjectAllLessonsAction() {
-        // Создать карточки для всех занятий по выбранному предмету
+        Subject selectedSubject = selectSubject();
+        createSubjectTasks(selectedSubject.getLessonsByTypes(selectLessonTypes()), selectedSubject.getName());
     }
 
     private void createSubjectRemainingLessonsAction() {
-        // Создать карточки для оставшихся занятий по выбранному предмету
+        Subject selectedSubject = selectSubject();
+        createSubjectTasks(selectedSubject.getRemainingAndTypesLessons(LocalDate.now(), selectLessonTypes()), selectedSubject.getName());
     }
 
     private void createAllSubjectsAllLessonsAction() {
-        // Создать карточки для всех занятий по всем предметам
+        List<Subject> subjects = scheduleService.getSubjects(groupId);
+        for (Subject subject : subjects) {
+            String subjectName = subject.getName();
+            System.out.println("Нужно ли добавлять таски по предмету " + subjectName);
+            if (scannerManager.scanBoolean()) {
+                createSubjectTasks(subject.getLessonsByTypes(selectLessonTypes()), subjectName);
+            }
+        }
     }
 
     private void createAllSubjectsRemainingLessonsAction() {
-        // Создать карточки для оставшихся занятий по всем предметам
+        List<Subject> subjects = scheduleService.getSubjects(groupId);
+        for (Subject subject : subjects) {
+            String subjectName = subject.getName();
+            System.out.println("Нужно ли добавлять оставшиеся таски по предмету " + subjectName);
+            if (scannerManager.scanBoolean()) {
+                createSubjectTasks(subject.getRemainingAndTypesLessons(LocalDate.now(), selectLessonTypes()), subjectName);
+            }
+        }
+    }
+
+    private Set<LessonType> selectLessonTypes() {
+        System.out.println("Выберите виды занятий");
+        List<LessonType> types = scannerManager.multiSelect(LessonType.values());
+        return new HashSet<>(types);
+    }
+
+    private void createSubjectTasks(List<Lesson> lessons, String subjectName) {
+        System.out.println("Сколько работ по предмету " + subjectName);
+        int labCount = scannerManager.scanBorderInt(0, 20);
+
+        taskManagerService.createTasks(lessons, subjectName, labCount, listToCreateId);
     }
 
     private void exit() {

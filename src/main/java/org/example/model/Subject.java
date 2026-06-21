@@ -85,6 +85,10 @@ public class Subject implements Nameable {
         return getFilteredLessons(dateFrom, null, null, null, null);
     }
 
+    public List<Lesson> getRemainingAndTypesLessons(LocalDate dateFrom, Set<LessonType> types) {
+        return getFilteredLessons(dateFrom, null, null, null, types);
+    }
+
     public List<Lesson> getNotOnlySubgroupLessons(int subgroupNumber) {
         return getFilteredLessons(null, null, subgroupNumber, false, null);
     }

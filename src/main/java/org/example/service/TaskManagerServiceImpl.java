@@ -6,14 +6,13 @@ import com.julienvey.trello.domain.TList;
 import lombok.RequiredArgsConstructor;
 import org.example.model.Lesson;
 import org.example.model.LessonType;
-import org.example.model.Subject;
 import org.example.presentation.api.task_manager.TaskManagerApiClient;
 
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RequiredArgsConstructor
 public class TaskManagerServiceImpl implements TaskManagerService {
@@ -30,6 +29,38 @@ public class TaskManagerServiceImpl implements TaskManagerService {
         taskManagerApiClient.createTask(card, listId);
     }
 
+    @Override
+    public void createTasks(List<Lesson> lessons, String subjectName, int labCount, String listId) {
+        int i = 1;
+        String number;
+        for (Lesson lesson : lessons) {
+            if (labCount >= i) {
+                number = String.valueOf(i);
+            } else {
+                number = "X";
+            }
+
+            createTask(lesson, getCardName(lesson.getLessonType(), number, subjectName), listId);
+            i++;
+        }
+    }
+
+    @Override
+    public void createAutoLabCountTasks(
+            Map<String, List<Lesson>> lessonsBySubjectName,
+            String listToCreateTasksId,
+            String labCountListId
+    ) {
+        Map<String, Integer> subjectLabCount = getSubjectLabCount(labCountListId);
+        for (Map.Entry<String, List<Lesson>> entry : lessonsBySubjectName.entrySet()) {
+            String subjectName = entry.getKey();
+            List<Lesson> lessons = entry.getValue();
+            int labCount = subjectLabCount.get(subjectName);
+
+            createTasks(lessons, subjectName, labCount, listToCreateTasksId);
+        }
+    }
+
     private String getCardName(LessonType type, String number, String subjectName) {
         String typeString = switch (type) {
             case PRACTICAL -> "ПЗ";
@@ -40,25 +71,28 @@ public class TaskManagerServiceImpl implements TaskManagerService {
     }
 
     @Override
-    public void createSubjectTasks(Subject subject, int labCount, String listId) {
-        int i = 1;
-        String number;
-        for (Lesson lesson : subject.getLessonsByTypes(Set.of(LessonType.LABORATORY, LessonType.PRACTICAL))) {
-            if (labCount >= i) {
-                number = String.valueOf(i);
-            } else {
-                number = "X";
-            }
+    public Map<String, Integer> getSubjectLabCount(String boardId, String labCountListName) {
+        Map<String, Integer> labCounts = new HashMap<>();
+        TList labCountList = taskManagerApiClient.getList(labCountListName, boardId);
+        for (Card card : labCountList.getCards()) {
+            String checkListId = card.getIdChecklists().getFirst();
+            CheckList checkList = taskManagerApiClient.getCheckList(checkListId);
 
-            createTask(lesson, getCardName(lesson.getLessonType(), number, subject.getName()), listId);
-            i++;
+            int labCount = checkList.getCheckItems()
+                    .stream()
+                    .filter(item -> item.getState().equals("incomplete"))
+                    .toList()
+                    .size();
+
+            labCounts.put(card.getName(), labCount);
         }
+        return labCounts;
     }
 
     @Override
-    public Map<String, Integer> getSubjectLabCount(String boardId, String listName) {
+    public Map<String, Integer> getSubjectLabCount(String listId) {
         Map<String, Integer> labCounts = new HashMap<>();
-        TList labCountList = taskManagerApiClient.getList(listName, boardId);
+        TList labCountList = taskManagerApiClient.getList(listId);
         for (Card card : labCountList.getCards()) {
             String checkListId = card.getIdChecklists().getFirst();
             CheckList checkList = taskManagerApiClient.getCheckList(checkListId);

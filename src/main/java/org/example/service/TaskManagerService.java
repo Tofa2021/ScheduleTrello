@@ -1,7 +1,6 @@
 package org.example.service;
 
 import org.example.model.Lesson;
-import org.example.model.Subject;
 
 import java.util.List;
 import java.util.Map;
@@ -9,11 +8,11 @@ import java.util.Map;
 public interface TaskManagerService {
     void createTask(Lesson lesson, String name, String listId);
 
-    void createSubjectTasks(Subject subject, int labCount, String listId);
+    void createTasks(List<Lesson> lessons, String subjectName, int labCount, String listId);
 
-    default void createSubjectTasks(List<Subject> subjects, int labCount, String listId) {
-        subjects.forEach(subject -> createSubjectTasks(subject, labCount, listId));
-    }
+    void createAutoLabCountTasks(Map<String, List<Lesson>> lessonsBySubjectName, String listToCreateId, String labCountListId);
 
     Map<String, Integer> getSubjectLabCount(String boardId, String listName);
+
+    Map<String, Integer> getSubjectLabCount(String listId);
 }
