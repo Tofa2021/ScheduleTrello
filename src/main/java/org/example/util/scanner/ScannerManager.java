@@ -2,6 +2,9 @@ package org.example.util.scanner;
 
 import org.example.model.Nameable;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
@@ -42,6 +45,17 @@ public interface ScannerManager {
                 return true;
             }
             System.out.println("Не удалось понять согласие или отрицание");
+        }
+    }
+
+    default LocalDate scanDate() {
+        while (true) {
+            String dateString = scanString();
+            try {
+                return LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            } catch (DateTimeParseException e) {
+                System.out.println("Формат даты должен быть такой (дд.мм.гггг)");
+            }
         }
     }
 

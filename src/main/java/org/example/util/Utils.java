@@ -2,6 +2,7 @@ package org.example.util;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,5 +26,12 @@ public class Utils {
         };
 
         return DayOfWeek.of(dayOfWeek);
+    }
+
+    public static LocalTime convertToTime(String timeString) {
+        String[] parts = timeString.split(":");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+        return LocalTime.of(hours, minutes);
     }
 }

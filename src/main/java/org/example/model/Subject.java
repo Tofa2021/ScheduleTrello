@@ -93,6 +93,10 @@ public class Subject implements Nameable {
         return getFilteredLessons(null, null, subgroupNumber, false, null);
     }
 
+    public List<Lesson> getDatePeriodLessons(LocalDate dateFrom, LocalDate dateTo) {
+        return getFilteredLessons(dateFrom, dateTo, null, null, null);
+    }
+
     private List<Lesson> getFilteredLessons(
             LocalDate dateFrom,
             LocalDate dateTo,
@@ -103,11 +107,11 @@ public class Subject implements Nameable {
         Stream<Lesson> stream = lessons.stream();
 
         if (dateFrom != null) {
-            stream = stream.filter(lesson -> lesson.getDate().isAfter(dateFrom));
+            stream = stream.filter(lesson -> !lesson.getDate().isBefore(dateFrom));
         }
 
         if (dateTo != null) {
-            stream = stream.filter(lesson -> lesson.getDate().isBefore(dateTo));
+            stream = stream.filter(lesson -> !lesson.getDate().isAfter(dateTo));
         }
 
         if (subgroupNumber != null) {

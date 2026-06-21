@@ -9,9 +9,8 @@ import org.example.service.TaskManagerService;
 import org.example.util.scanner.ScannerManager;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class CommandLineInterface implements Interface {
@@ -110,19 +109,55 @@ public class CommandLineInterface implements Interface {
     }
 
     private void showTodayScheduleAction() {
-        // Показать расписание на сегодня
+        scannerManager.printStringList(scheduleService.getDateLessons(LocalDate.of(2026, 4, 6), groupId));
     }
 
     private void showCurrentWeekScheduleAction() {
-        // Показать расписание на текущую неделю
+        List<Lesson> lessons = scheduleService.getDatePeriodLessons(
+                LocalDate.of(2026, 4, 6),
+                LocalDate.of(2026, 4, 13),
+                groupId
+        );
+
+        if (lessons.isEmpty()) {
+            System.out.println("На этой неделе пар нет");
+            return;
+        }
+
+        printPrettyDatePeriod(lessons);
     }
 
     private void showDayScheduleAction() {
-        // Показать расписание на выбранный день
+        System.out.println("Введите дату");
+        LocalDate date = scannerManager.scanDate();
+        List<Lesson> lessons = scheduleService.getDateLessons(date, groupId);
+        scannerManager.printStringList(lessons);
     }
 
     private void showWeekScheduleAction() {
-        // Показать расписание на выбранную неделю
+        System.out.println("Введите дату начала недели");
+        LocalDate dateFrom = scannerManager.scanDate();
+        List<Lesson> lessons = scheduleService.getDatePeriodLessons(dateFrom, dateFrom.plusWeeks(1), groupId);
+        printPrettyDatePeriod(lessons);
+    }
+
+    private void printPrettyDatePeriod(List<Lesson> lessons) {
+        Map<LocalDate, List<Lesson>> lessonsByDate = lessons.stream()
+                .sorted(Comparator
+                        .comparing(Lesson::getDate)
+                        .thenComparing(Lesson::getStartLessonTime)
+                )
+                .collect(Collectors.groupingBy(
+                        Lesson::getDate,
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+
+        for (Map.Entry<LocalDate, List<Lesson>> entry : lessonsByDate.entrySet()) {
+            System.out.println(entry.getKey());
+            scannerManager.printStringList(entry.getValue());
+            System.out.println();
+        }
     }
 
     private void createSubjectAllLessonsAction() {
